@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bayazid Super Shop - bKash &amp; Shop Cash Ledger</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; padding: 0 !important; }
+      .print-card { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen font-sans pb-12">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img
+          src="logo.png"
+          alt="Bayazid Super Shop Logo"
+          class="w-11 h-11 rounded-xl object-cover border-2 border-emerald-400 bg-blue-950 shrink-0"
+          onerror="this.style.display='none'"
+        />
+        <div>
+          <h1 class="text-lg sm:text-2xl font-bold tracking-tight">Bayazid Super Shop</h1>
+          <p class="text-blue-200 text-xs">bKash Ledger &amp; Daily Shop Cash Management</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 no-print">
+        <button onclick="window.print()" class="bg-blue-800 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg border border-blue-600 transition">
+          Print / PDF
+        </button>
+        <button onclick="resetAllData()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-blue-950 border-t border-blue-800 no-print">
+      <div class="max-w-5xl mx-auto px-4 flex gap-2 py-2">
+        <button
+          id="tab-btn-bkash"
+          onclick="switchTab('bkash')"
+          class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-pink-600 text-white shadow transition"
+        >
+          bKash হিসাব (bKash Ledger)
+        </button>
+        <button
+          id="tab-btn-shop"
+          onclick="switchTab('shop')"
+          class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-blue-900 text-blue-200 hover:bg-blue-800 transition"
+        >
+          দোকানের সেল ও ক্যাশ (Shop Cash)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== SECTION 1: BKASH LEDGER ==================== -->
+  <main id="section-bkash" class="max-w-5xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- bKash Summary Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total bKash Transactions</p>
+        <p id="card-total" class="text-2xl font-bold text-blue-900 mt-1">203,620 BDT</p>
+        <p id="card-count" class="text-xs text-slate-400 mt-1">18 entries</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Deposited</p>
+        <p id="card-deposit" class="text-2xl font-bold text-emerald-700 mt-1">145,000 BDT</p>
+        <p id="card-deposit-count" class="text-xs text-slate-400 mt-1">1 deposit entry</p>
+      </div>
+      <div class="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-300 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-amber-800">Remaining / Due</p>
+        <p id="card-due" class="text-2xl font-extrabold text-orange-700 mt-1">58,620 BDT</p>
+        <p id="card-status" class="text-xs text-amber-700 mt-1">Balance payable</p>
+      </div>
+      <div class="bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-300 print-card">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-pink-800">Total Profit (bKash)</p>
+          <button onclick="changeRate()" class="no-print text-[11px] bg-pink-200 hover:bg-pink-300 text-pink-900 px-2 py-0.5 rounded font-semibold">Edit Rate</button>
+        </div>
+        <p id="card-profit" class="text-2xl font-extrabold text-pink-700 mt-1">763.58 BDT</p>
+        <p id="card-rate-label" class="text-xs text-pink-700 mt-1">Rate: 3.75 TK per 1,000 TK</p>
+      </div>
+    </section>
+
+    <!-- bKash Action Forms -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-base font-bold text-blue-900 mb-3">+ Add bKash Transaction</h2>
+        <form id="tx-form" class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Date (DD-MM-YY)</label>
+            <input type="text" id="tx-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Phone / Account Number</label>
+            <input type="text" id="tx-number" placeholder="e.g. 01813351727" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Amount (BDT)</label>
+            <input type="number" id="tx-amount" placeholder="e.g. 10000" min="1" step="any" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p id="live-profit-preview" class="text-xs text-pink-700 font-medium mt-1">Estimated Profit: 0.00 BDT</p>
+          </div>
+          <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm py-2.5 rounded-lg transition">
+            Add Transaction
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-base font-bold text-emerald-800 mb-3">+ Add bKash Deposit / Payment</h2>
+        <form id="dep-form" class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Deposit Date (DD-MM-YY)</label>
+            <input type="text" id="dep-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Note / Reference</label>
+            <input type="text" id="dep-note" placeholder="e.g. Cash Deposit / bKash" value="Deposit" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Deposit Amount (BDT)</label>
+            <input type="number" id="dep-amount" placeholder="e.g. 20000" min="1" step="any" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <p class="text-xs text-slate-400 mt-1">Deducts automatically from Remaining / Due Balance</p>
+          </div>
+          <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm py-2.5 rounded-lg transition">
+            Add Deposit
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- bKash Transaction List Table -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden print-card">
+      <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">bKash Transaction Entries &amp; Profit</h2>
+          <p id="table-rate-subtitle" class="text-xs text-slate-500">Profit calculated at 3.75 TK per 1,000 TK</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <span id="badge-tx-total" class="bg-blue-50 text-blue-900 text-xs font-bold px-3 py-1 rounded-full border border-blue-200">
+            Total: 203,620 BDT
+          </span>
+          <span id="badge-profit-total" class="bg-pink-50 text-pink-800 text-xs font-bold px-3 py-1 rounded-full border border-pink-200">
+            Profit: 763.58 BDT
+          </span>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-blue-900 text-white text-xs uppercase">
+            <tr>
+              <th class="px-3 py-3 text-center">SL</th>
+              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-center">Number</th>
+              <th class="px-3 py-3 text-right">Amount (BDT)</th>
+              <th class="px-3 py-3 text-right">Profit (BDT)</th>
+              <th class="px-3 py-3 text-center no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tx-tbody" class="divide-y divide-slate-200"></tbody>
+          <tfoot class="bg-blue-50 font-bold text-blue-950">
+            <tr>
+              <td colspan="3" class="px-3 py-3 text-right">TOTAL:</td>
+              <td id="foot-tx-total" class="px-3 py-3 text-right">203,620/-</td>
+              <td id="foot-profit-total" class="px-3 py-3 text-right text-pink-700">763.58/-</td>
+              <td class="no-print"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- bKash Deposit History Table -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden print-card">
+      <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-emerald-900">bKash Deposit / Payment History</h2>
+          <p class="text-xs text-slate-500">All received deposits deducted from total transaction amount</p>
+        </div>
+        <span id="badge-dep-total" class="bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
+          Total Deposited: 145,000 BDT
+        </span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-emerald-800 text-white text-xs uppercase">
+            <tr>
+              <th class="px-3 py-3 text-center">SL</th>
+              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-center">Note</th>
+              <th class="px-3 py-3 text-right">Deposit (BDT)</th>
+              <th class="px-3 py-3 text-center no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="dep-tbody" class="divide-y divide-slate-200"></tbody>
+          <tfoot class="bg-emerald-50 font-bold text-emerald-950">
+            <tr>
+              <td colspan="3" class="px-3 py-3 text-right">TOTAL DEPOSITED:</td>
+              <td id="foot-dep-total" class="px-3 py-3 text-right">145,000/-</td>
+              <td class="no-print"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- bKash Final Summary -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 print-card">
+      <h2 class="text-base font-bold text-blue-900 mb-3">bKash Account Summary — Bayazid Super Shop</h2>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Total Transaction Amount (<span id="sum-tx-count">18</span> Entries):</span>
+          <span id="sum-tx-total" class="font-bold text-slate-900">203,620 BDT</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Less: Total Deposited (<span id="sum-dep-count">1</span> Entries):</span>
+          <span id="sum-dep-total" class="font-bold text-emerald-700">- 145,000 BDT</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-lg bg-amber-50 border border-amber-300">
+          <span class="font-bold text-amber-950 text-base">Remaining / Due Balance:</span>
+          <span id="sum-due-total" class="font-extrabold text-orange-700 text-lg">58,620 BDT</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-lg bg-pink-50 border border-pink-300 mt-2">
+          <div>
+            <span class="font-bold text-pink-950 text-base block">Total bKash Profit Earned:</span>
+            <span id="sum-rate-info" class="text-xs text-pink-700">Calculated at 3.75 TK per 1,000 TK</span>
+          </div>
+          <span id="sum-profit-total" class="font-extrabold text-pink-700 text-lg">763.58 BDT</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== SECTION 2: SHOP DAILY SALES, PURCHASE & CASH ==================== -->
+  <main id="section-shop" class="max-w-5xl mx-auto px-4 mt-6 space-y-6 hidden">
+
+    <!-- Shop Summary Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Shop Sales (মোট সেল)</p>
+        <p id="shop-card-sales" class="text-2xl font-bold text-emerald-700 mt-1">0 BDT</p>
+        <p id="shop-card-days" class="text-xs text-slate-400 mt-1">0 daily records</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Goods Purchased (মাল ক্রয়)</p>
+        <p id="shop-card-purchase" class="text-2xl font-bold text-rose-700 mt-1">0 BDT</p>
+        <p id="shop-card-expense-sub" class="text-xs text-slate-400 mt-1">Other expense: 0 BDT</p>
+      </div>
+      <div class="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-300 print-card">
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-800">Shop Balance (দোকানের ব্যালেন্স)</p>
+        <p id="shop-card-balance" class="text-2xl font-extrabold text-blue-900 mt-1">0 BDT</p>
+        <p class="text-xs text-blue-700 mt-1">Total Sales - Goods Purchased</p>
+      </div>
+      <div class="bg-teal-50 p-4 rounded-xl shadow-sm border border-teal-300 print-card">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-teal-800">Cash Balance (ক্যাশ ব্যালেন্স)</p>
+          <button onclick="setOpeningCash()" class="no-print text-[11px] bg-teal-200 hover:bg-teal-300 text-teal-950 px-2 py-0.5 rounded font-semibold">Opening Cash</button>
+        </div>
+        <p id="shop-card-cash" class="text-2xl font-extrabold text-teal-800 mt-1">0 BDT</p>
+        <p id="shop-card-opening-label" class="text-xs text-teal-700 mt-1">Opening Cash: 0 BDT</p>
+      </div>
+    </section>
+
+    <!-- Add Daily Shop Entry Form -->
+    <section class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 no-print">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-base font-bold text-blue-900">+ দৈনিক দোকানের হিসাব যোগ করুন (Daily Shop Entry)</h2>
+          <p class="text-xs text-slate-500">প্রতিদিনের সেল, মাল ক্রয় এবং ক্যাশ খরচ লিখুন (যেটি হয়নি সেটি 0 রাখুন)</p>
+        </div>
+      </div>
+      <form id="shop-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">তারিখ (Date)</label>
+          <input type="text" id="shop-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-emerald-700 mb-1">ডেইলি সেল (Daily Sale BDT)</label>
+          <input type="number" id="shop-sale" placeholder="0" min="0" step="any" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-rose-700 mb-1">মাল ক্রয় (Goods Buy BDT)</label>
+          <input type="number" id="shop-purchase" placeholder="0" min="0" step="any" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-amber-700 mb-1">অন্যান্য খরচ / ক্যাশ আউট</label>
+          <input type="number" id="shop-expense" placeholder="0" min="0" step="any" value="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">বিবরণ / নোট (Note)</label>
+          <input type="text" id="shop-note" placeholder="e.g. Daily Hisab" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="sm:col-span-2 lg:col-span-5">
+          <button type="submit" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold text-sm py-2.5 rounded-lg transition">
+            Save Daily Shop Record
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Daily Shop Ledger Table -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden print-card">
+      <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">দৈনিক সেল, মাল ক্রয় ও ক্যাশ বিবরণী</h2>
+          <p class="text-xs text-slate-500">প্রতিদিনের সেল থেকে মাল ক্রয় ও খরচ বাদ দিয়ে নিট ক্যাশ হিসাব</p>
+        </div>
+        <span id="shop-badge-net" class="bg-teal-50 text-teal-800 text-xs font-bold px-3 py-1 rounded-full border border-teal-200">
+          Net Cash: 0 BDT
+        </span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-teal-900 text-white text-xs uppercase">
+            <tr>
+              <th class="px-3 py-3 text-center">SL</th>
+              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-left">Note</th>
+              <th class="px-3 py-3 text-right">Daily Sale (+)</th>
+              <th class="px-3 py-3 text-right">Goods Buy (-)</th>
+              <th class="px-3 py-3 text-right">Other Exp (-)</th>
+              <th class="px-3 py-3 text-right">Day Net Cash</th>
+              <th class="px-3 py-3 text-center no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="shop-tbody" class="divide-y divide-slate-200"></tbody>
+          <tfoot class="bg-teal-50 font-bold text-teal-950">
+            <tr>
+              <td colspan="3" class="px-3 py-3 text-right">TOTAL:</td>
+              <td id="foot-shop-sale" class="px-3 py-3 text-right text-emerald-700">0/-</td>
+              <td id="foot-shop-purchase" class="px-3 py-3 text-right text-rose-700">0/-</td>
+              <td id="foot-shop-expense" class="px-3 py-3 text-right text-amber-700">0/-</td>
+              <td id="foot-shop-net" class="px-3 py-3 text-right text-blue-900">0/-</td>
+              <td class="no-print"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Shop Cash Summary Box -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 print-card">
+      <h2 class="text-base font-bold text-teal-900 mb-3">Shop Balance &amp; Cash Summary — Bayazid Super Shop</h2>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Opening Cash Balance (শুরুর ক্যাশ):</span>
+          <span id="sum-shop-opening" class="font-bold text-slate-900">0 BDT</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Total Daily Sales (মোট সেল):</span>
+          <span id="sum-shop-sales" class="font-bold text-emerald-700">+ 0 BDT</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Total Goods Purchased (মোট মাল ক্রয়):</span>
+          <span id="sum-shop-purchase" class="font-bold text-rose-700">- 0 BDT</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-slate-100">
+          <span class="text-slate-600 font-medium">Other Expenses / Cash Out (অন্যান্য খরচ):</span>
+          <span id="sum-shop-expense" class="font-bold text-amber-700">- 0 BDT</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-lg bg-blue-50 border border-blue-300">
+          <div>
+            <span class="font-bold text-blue-950 text-base block">Shop Balance (দোকানের ব্যালেন্স):</span>
+            <span class="text-xs text-blue-700">মোট সেল - মোট মাল ক্রয় (Sales minus Goods Purchase)</span>
+          </div>
+          <span id="sum-shop-balance" class="font-extrabold text-blue-900 text-lg">0 BDT</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-lg bg-teal-50 border border-teal-300 mt-2">
+          <div>
+            <span class="font-bold text-teal-950 text-base block">Cash Balance in Hand (হাতে ক্যাশ ব্যালেন্স):</span>
+            <span class="text-xs text-teal-700">শুরুর ক্যাশ + মোট সেল - মাল ক্রয় - অন্যান্য খরচ</span>
+          </div>
+          <span id="sum-shop-cash" class="font-extrabold text-teal-800 text-lg">0 BDT</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-400 pt-8">
+    &copy; 2026 Bayazid Super Shop — Automatic bKash &amp; Shop Cash Ledger<br />
+    All entries are saved locally in your browser automatically.
+  </footer>
+
+  <script>
+    // ==================== INITIAL DATA ====================
+    const INITIAL_TRANSACTIONS = [
+      { date: "03-11-26", number: "01813351727", amount: 10200 },
+      { date: "04-11-26", number: "01314877930", amount: 32640 },
+      { date: "04-11-26", number: "01813351727", amount: 6120 },
+      { date: "05-11-26", number: "01605766872", amount: 5100 },
+      { date: "05-11-26", number: "01752578297", amount: 16320 },
+      { date: "05-11-26", number: "01828584813", amount: 1020 },
+      { date: "06-11-26", number: "01752871994", amount: 15300 },
+      { date: "10-11-26", number: "01401664990", amount: 51000 },
+      { date: "10-11-26", number: "01316982168", amount: 2040 },
+      { date: "10-11-26", number: "01605766872", amount: 4080 },
+      { date: "10-11-26", number: "01855874438", amount: 5100 },
+      { date: "11-11-26", number: "01752578297", amount: 3400 },
+      { date: "12-11-26", number: "01823381587", amount: 5500 },
+      { date: "12-11-26", number: "01878932499", amount: 5100 },
+      { date: "16-11-26", number: "01813351727", amount: 20400 },
+      { date: "17-11-26", number: "01825389507", amount: 6120 },
+      { date: "17-11-26", number: "01316982168", amount: 2040 },
+      { date: "18-11-26", number: "01815129617", amount: 12140 }
+    ];
+
+    const INITIAL_DEPOSITS = [
+      { date: "11-11-26", note: "Initial Deposit", amount: 145000 }
+    ];
+
+    // Storage Keys
+    const STORAGE_KEY_TX = "bayazid_shop_transactions_v2";
+    const STORAGE_KEY_DEP = "bayazid_shop_deposits_v2";
+    const STORAGE_KEY_RATE = "bayazid_shop_profit_rate_v2";
+    const STORAGE_KEY_SHOP_RECORDS = "bayazid_shop_daily_records_v1";
+    const STORAGE_KEY_OPENING_CASH = "bayazid_shop_opening_cash_v1";
+
+    // State
+    let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY_TX)) || [...INITIAL_TRANSACTIONS];
+    let deposits = JSON.parse(localStorage.getItem(STORAGE_KEY_DEP)) || [...INITIAL_DEPOSITS];
+    let profitPerThousand = parseFloat(localStorage.getItem(STORAGE_KEY_RATE));
+    if (isNaN(profitPerThousand)) profitPerThousand = 3.75;
+
+    let shopRecords = JSON.parse(localStorage.getItem(STORAGE_KEY_SHOP_RECORDS)) || [];
+    let openingCash = parseFloat(localStorage.getItem(STORAGE_KEY_OPENING_CASH));
+    if (isNaN(openingCash)) openingCash = 0;
+
+    let activeTab = "bkash";
+
+    function formatNum(n) {
+      return Number(n).toLocaleString("en-US");
+    }
+
+    function formatDecimal(n) {
+      return Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calcProfit(amount) {
+      return (Number(amount) * profitPerThousand) / 1000;
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+      localStorage.setItem(STORAGE_KEY_DEP, JSON.stringify(deposits));
+      localStorage.setItem(STORAGE_KEY_RATE, String(profitPerThousand));
+      localStorage.setItem(STORAGE_KEY_SHOP_RECORDS, JSON.stringify(shopRecords));
+      localStorage.setItem(STORAGE_KEY_OPENING_CASH, String(openingCash));
+    }
+
+    // ==================== TAB SWITCHER ====================
+    function switchTab(tab) {
+      activeTab = tab;
+      const bkashSec = document.getElementById("section-bkash");
+      const shopSec = document.getElementById("section-shop");
+      const btnBkash = document.getElementById("tab-btn-bkash");
+      const btnShop = document.getElementById("tab-btn-shop");
+
+      if (tab === "bkash") {
+        bkashSec.classList.remove("hidden");
+        shopSec.classList.add("hidden");
+        btnBkash.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-pink-600 text-white shadow transition";
+        btnShop.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-blue-900 text-blue-200 hover:bg-blue-800 transition";
+      } else {
+        shopSec.classList.remove("hidden");
+        bkashSec.classList.add("hidden");
+        btnShop.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-teal-600 text-white shadow transition";
+        btnBkash.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-blue-900 text-blue-200 hover:bg-blue-800 transition";
+      }
+    }
+
+    // ==================== RENDER BKASH ====================
+    function renderBkash() {
+      const txTbody = document.getElementById("tx-tbody");
+      txTbody.innerHTML = "";
+      let totalTx = 0;
+      let totalProfit = 0;
+
+      transactions.forEach((item, index) => {
+        const amt = Number(item.amount);
+        const profit = calcProfit(amt);
+        totalTx += amt;
+        totalProfit += profit;
+
+        const tr = document.createElement("tr");
+        tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
+        tr.innerHTML = `
+          <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap">${item.date}</td>
+          <td class="px-3 py-2.5 text-center font-mono">${item.number}</td>
+          <td class="px-3 py-2.5 text-right font-bold text-slate-900">${formatNum(amt)}/-</td>
+          <td class="px-3 py-2.5 text-right font-semibold text-pink-700">${formatDecimal(profit)}</td>
+          <td class="px-3 py-2.5 text-center no-print">
+            <button onclick="deleteTx(${index})" class="text-xs text-rose-600 hover:underline font-medium">Delete</button>
+          </td>
+        `;
+        txTbody.appendChild(tr);
+      });
+
+      const depTbody = document.getElementById("dep-tbody");
+      depTbody.innerHTML = "";
+      let totalDep = 0;
+
+      deposits.forEach((item, index) => {
+        totalDep += Number(item.amount);
+        const tr = document.createElement("tr");
+        tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
+        tr.innerHTML = `
+          <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap">${item.date}</td>
+          <td class="px-3 py-2.5 text-center">${item.note}</td>
+          <td class="px-3 py-2.5 text-right font-bold text-emerald-700">${formatNum(item.amount)}/-</td>
+          <td class="px-3 py-2.5 text-center no-print">
+            <button onclick="deleteDep(${index})" class="text-xs text-rose-600 hover:underline font-medium">Delete</button>
+          </td>
+        `;
+        depTbody.appendChild(tr);
+      });
+
+      const remaining = totalTx - totalDep;
+
+      document.getElementById("card-total").textContent = `${formatNum(totalTx)} BDT`;
+      document.getElementById("card-count").textContent = `${transactions.length} entries`;
+      document.getElementById("card-deposit").textContent = `${formatNum(totalDep)} BDT`;
+      document.getElementById("card-deposit-count").textContent = `${deposits.length} deposit entries`;
+      document.getElementById("card-due").textContent = `${formatNum(remaining)} BDT`;
+      document.getElementById("card-status").textContent = remaining > 0 ? "Balance payable" : (remaining < 0 ? "Advance / Overpaid" : "Settled");
+
+      document.getElementById("card-profit").textContent = `${formatDecimal(totalProfit)} BDT`;
+      document.getElementById("card-rate-label").textContent = `Rate: ${profitPerThousand} TK per 1,000 TK`;
+      document.getElementById("table-rate-subtitle").textContent = `Profit calculated at ${profitPerThousand} TK per 1,000 TK`;
+
+      document.getElementById("badge-tx-total").textContent = `Total: ${formatNum(totalTx)} BDT`;
+      document.getElementById("badge-profit-total").textContent = `Profit: ${formatDecimal(totalProfit)} BDT`;
+      document.getElementById("foot-tx-total").textContent = `${formatNum(totalTx)}/-`;
+      document.getElementById("foot-profit-total").textContent = `${formatDecimal(totalProfit)}/-`;
+
+      document.getElementById("badge-dep-total").textContent = `Total Deposited: ${formatNum(totalDep)} BDT`;
+      document.getElementById("foot-dep-total").textContent = `${formatNum(totalDep)}/-`;
+
+      document.getElementById("sum-tx-count").textContent = transactions.length;
+      document.getElementById("sum-tx-total").textContent = `${formatNum(totalTx)} BDT`;
+      document.getElementById("sum-dep-count").textContent = deposits.length;
+      document.getElementById("sum-dep-total").textContent = `- ${formatNum(totalDep)} BDT`;
+      document.getElementById("sum-due-total").textContent = `${formatNum(remaining)} BDT`;
+      document.getElementById("sum-profit-total").textContent = `${formatDecimal(totalProfit)} BDT`;
+      document.getElementById("sum-rate-info").textContent = `Calculated at ${profitPerThousand} TK per 1,000 TK`;
+    }
+
+    // ==================== RENDER SHOP DAILY CASH ====================
+    function renderShop() {
+      const shopTbody = document.getElementById("shop-tbody");
+      shopTbody.innerHTML = "";
+      let totalSales = 0;
+      let totalPurchase = 0;
+      let totalExpense = 0;
+
+      if (shopRecords.length === 0) {
+        shopTbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-4 py-6 text-center text-xs text-slate-400">
+              এখনো কোনো দোকানের ডেইলি হিসাব যোগ করা হয়নি। ওপরের ফর্ম থেকে আজকের সেল ও মাল ক্রয় যোগ করুন।
+            </td>
+          </tr>
+        `;
+      } else {
+        shopRecords.forEach((rec, index) => {
+          const sale = Number(rec.sale) || 0;
+          const purchase = Number(rec.purchase) || 0;
+          const expense = Number(rec.expense) || 0;
+          const dayNet = sale - purchase - expense;
+
+          totalSales += sale;
+          totalPurchase += purchase;
+          totalExpense += expense;
+
+          const tr = document.createElement("tr");
+          tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
+          tr.innerHTML = `
+            <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
+            <td class="px-3 py-2.5 text-center whitespace-nowrap">${rec.date}</td>
+            <td class="px-3 py-2.5 text-left text-slate-700">${rec.note || "-"}</td>
+            <td class="px-3 py-2.5 text-right font-bold text-emerald-700">${formatNum(sale)}/-</td>
+            <td class="px-3 py-2.5 text-right font-semibold text-rose-700">${formatNum(purchase)}/-</td>
+            <td class="px-3 py-2.5 text-right font-medium text-amber-700">${formatNum(expense)}/-</td>
+            <td class="px-3 py-2.5 text-right font-bold ${dayNet >= 0 ? 'text-blue-900' : 'text-rose-600'}">${formatNum(dayNet)}/-</td>
+            <td class="px-3 py-2.5 text-center no-print">
+              <button onclick="deleteShopRecord(${index})" class="text-xs text-rose-600 hover:underline font-medium">Delete</button>
+            </td>
+          `;
+          shopTbody.appendChild(tr);
+        });
+      }
+
+      const shopBalance = totalSales - totalPurchase;
+      const cashBalance = openingCash + totalSales - totalPurchase - totalExpense;
+
+      document.getElementById("shop-card-sales").textContent = `${formatNum(totalSales)} BDT`;
+      document.getElementById("shop-card-days").textContent = `${shopRecords.length} daily records`;
+      document.getElementById("shop-card-purchase").textContent = `${formatNum(totalPurchase)} BDT`;
+      document.getElementById("shop-card-expense-sub").textContent = `Other expense: ${formatNum(totalExpense)} BDT`;
+      document.getElementById("shop-card-balance").textContent = `${formatNum(shopBalance)} BDT`;
+      document.getElementById("shop-card-cash").textContent = `${formatNum(cashBalance)} BDT`;
+      document.getElementById("shop-card-opening-label").textContent = `Opening Cash: ${formatNum(openingCash)} BDT`;
+
+      document.getElementById("shop-badge-net").textContent = `Cash in Hand: ${formatNum(cashBalance)} BDT`;
+      document.getElementById("foot-shop-sale").textContent = `${formatNum(totalSales)}/-`;
+      document.getElementById("foot-shop-purchase").textContent = `${formatNum(totalPurchase)}/-`;
+      document.getElementById("foot-shop-expense").textContent = `${formatNum(totalExpense)}/-`;
+      document.getElementById("foot-shop-net").textContent = `${formatNum(totalSales - totalPurchase - totalExpense)}/-`;
+
+      document.getElementById("sum-shop-opening").textContent = `${formatNum(openingCash)} BDT`;
+      document.getElementById("sum-shop-sales").textContent = `+ ${formatNum(totalSales)} BDT`;
+      document.getElementById("sum-shop-purchase").textContent = `- ${formatNum(totalPurchase)} BDT`;
+      document.getElementById("sum-shop-expense").textContent = `- ${formatNum(totalExpense)} BDT`;
+      document.getElementById("sum-shop-balance").textContent = `${formatNum(shopBalance)} BDT`;
+      document.getElementById("sum-shop-cash").textContent = `${formatNum(cashBalance)} BDT`;
+    }
+
+    function renderAll() {
+      renderBkash();
+      renderShop();
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById("tx-amount").addEventListener("input", function() {
+      const val = parseFloat(this.value);
+      const preview = document.getElementById("live-profit-preview");
+      if (!isNaN(val) && val > 0) {
+        preview.textContent = `Estimated Profit: ${formatDecimal(calcProfit(val))} BDT`;
+      } else {
+        preview.textContent = `Estimated Profit: 0.00 BDT`;
+      }
+    });
+
+    document.getElementById("tx-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const date = document.getElementById("tx-date").value.trim();
+      const number = document.getElementById("tx-number").value.trim();
+      const amount = parseFloat(document.getElementById("tx-amount").value);
+      if (!date || !number || isNaN(amount) || amount <= 0) return;
+
+      transactions.push({ date, number, amount });
+      saveData();
+      renderBkash();
+      this.reset();
+      document.getElementById("live-profit-preview").textContent = `Estimated Profit: 0.00 BDT`;
+    });
+
+    document.getElementById("dep-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const date = document.getElementById("dep-date").value.trim();
+      const note = document.getElementById("dep-note").value.trim() || "Deposit";
+      const amount = parseFloat(document.getElementById("dep-amount").value);
+      if (!date || isNaN(amount) || amount <= 0) return;
+
+      deposits.push({ date, note, amount });
+      saveData();
+      renderBkash();
+      document.getElementById("dep-date").value = "";
+      document.getElementById("dep-amount").value = "";
+    });
+
+    document.getElementById("shop-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const date = document.getElementById("shop-date").value.trim();
+      const sale = parseFloat(document.getElementById("shop-sale").value) || 0;
+      const purchase = parseFloat(document.getElementById("shop-purchase").value) || 0;
+      const expense = parseFloat(document.getElementById("shop-expense").value) || 0;
+      const note = document.getElementById("shop-note").value.trim();
+
+      if (!date) return;
+      if (sale === 0 && purchase === 0 && expense === 0) {
+        alert("অন্তত ডেইলি সেল, মাল ক্রয় বা খরচের একটি ঘর পূরণ করুন।");
+        return;
+      }
+
+      shopRecords.push({ date, sale, purchase, expense, note });
+      saveData();
+      renderShop();
+      document.getElementById("shop-sale").value = "0";
+      document.getElementById("shop-purchase").value = "0";
+      document.getElementById("shop-expense").value = "0";
+      document.getElementById("shop-note").value = "";
+    });
+
+    function changeRate() {
+      const input = prompt("Enter bKash profit per 1,000 BDT (e.g., 3.75):", profitPerThousand);
+      if (input !== null) {
+        const parsed = parseFloat(input);
+        if (!isNaN(parsed) && parsed >= 0) {
+          profitPerThousand = parsed;
+          saveData();
+          renderBkash();
+        }
+      }
+    }
+
+    function setOpeningCash() {
+      const input = prompt("দোকানের শুরুর ক্যাশ ব্যালেন্স কত টাকা? (Opening Cash BDT):", openingCash);
+      if (input !== null) {
+        const parsed = parseFloat(input);
+        if (!isNaN(parsed) && parsed >= 0) {
+          openingCash = parsed;
+          saveData();
+          renderShop();
+        }
+      }
+    }
+
+    function deleteTx(index) {
+      if (confirm("Delete this bKash transaction entry?")) {
+        transactions.splice(index, 1);
+        saveData();
+        renderBkash();
+      }
+    }
+
+    function deleteDep(index) {
+      if (confirm("Delete this bKash deposit entry?")) {
+        deposits.splice(index, 1);
+        saveData();
+        renderBkash();
+      }
+    }
+
+    function deleteShopRecord(index) {
+      if (confirm("দোকানের এই দিনের হিসাবটি মুছে ফেলতে চান?")) {
+        shopRecords.splice(index, 1);
+        saveData();
+        renderShop();
+      }
+    }
+
+    function resetAllData() {
+      if (activeTab === "bkash") {
+        if (confirm("Reset bKash entries back to the original 18 transactions and 145,000 BDT deposit?")) {
+          transactions = [...INITIAL_TRANSACTIONS];
+          deposits = [...INITIAL_DEPOSITS];
+          profitPerThousand = 3.75;
+          saveData();
+          renderBkash();
+        }
+      } else {
+        if (confirm("দোকানের ডেইলি সেল ও ক্যাশের সব এন্ট্রি মুছে ০ করতে চান?")) {
+          shopRecords = [];
+          openingCash = 0;
+          saveData();
+          renderShop();
+        }
+      }
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
