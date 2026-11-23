@@ -95,12 +95,24 @@
 
     <!-- bKash Action Forms -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+      <!-- Add Transaction Form -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-        <h2 class="text-base font-bold text-blue-900 mb-3">+ Add bKash Transaction</h2>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-blue-900">+ Add bKash Transaction</h2>
+          <button type="button" onclick="syncCurrentDateTime('tx')" class="text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-800 px-2 py-1 rounded font-semibold border border-blue-200">
+            Now ↻
+          </button>
+        </div>
         <form id="tx-form" class="space-y-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">Date (DD-MM-YY)</label>
-            <input type="text" id="tx-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Date (Auto)</label>
+              <input type="text" id="tx-date" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Time (Auto)</label>
+              <input type="text" id="tx-time" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600 mb-1">Phone / Account Number</label>
@@ -117,12 +129,24 @@
         </form>
       </div>
 
+      <!-- Add Deposit Form -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-        <h2 class="text-base font-bold text-emerald-800 mb-3">+ Add bKash Deposit / Payment</h2>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-emerald-800">+ Add bKash Deposit / Payment</h2>
+          <button type="button" onclick="syncCurrentDateTime('dep')" class="text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-semibold border border-emerald-200">
+            Now ↻
+          </button>
+        </div>
         <form id="dep-form" class="space-y-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">Deposit Date (DD-MM-YY)</label>
-            <input type="text" id="dep-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Date (Auto)</label>
+              <input type="text" id="dep-date" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Time (Auto)</label>
+              <input type="text" id="dep-time" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600 mb-1">Note / Reference</label>
@@ -161,7 +185,7 @@
           <thead class="bg-blue-900 text-white text-xs uppercase">
             <tr>
               <th class="px-3 py-3 text-center">SL</th>
-              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-center">Date &amp; Time</th>
               <th class="px-3 py-3 text-center">Number</th>
               <th class="px-3 py-3 text-right">Amount (BDT)</th>
               <th class="px-3 py-3 text-right">Profit (BDT)</th>
@@ -197,7 +221,7 @@
           <thead class="bg-emerald-800 text-white text-xs uppercase">
             <tr>
               <th class="px-3 py-3 text-center">SL</th>
-              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-center">Date &amp; Time</th>
               <th class="px-3 py-3 text-center">Note</th>
               <th class="px-3 py-3 text-right">Deposit (BDT)</th>
               <th class="px-3 py-3 text-center no-print">Action</th>
@@ -277,20 +301,27 @@
       <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div>
           <h2 class="text-base font-bold text-blue-900">+ দৈনিক দোকানের হিসাব যোগ করুন (Daily Shop Entry)</h2>
-          <p class="text-xs text-slate-500">প্রতিদিনের সেল, মাল ক্রয় এবং ক্যাশ খরচ লিখুন (যেটি হয়নি সেটি 0 রাখুন)</p>
+          <p class="text-xs text-slate-500">তারিখ ও সময় অটোমেটিক সেট থাকবে; প্রতিদিনের সেল, মাল ক্রয় ও খরচ লিখুন</p>
         </div>
+        <button type="button" onclick="syncCurrentDateTime('shop')" class="text-[11px] bg-teal-50 hover:bg-teal-100 text-teal-800 px-2.5 py-1 rounded font-semibold border border-teal-200">
+          Now ↻
+        </button>
       </div>
-      <form id="shop-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+      <form id="shop-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
         <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">তারিখ (Date)</label>
-          <input type="text" id="shop-date" placeholder="e.g. 23-11-26" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <label class="block text-xs font-medium text-slate-600 mb-1">তারিখ (Auto Date)</label>
+          <input type="text" id="shop-date" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-emerald-700 mb-1">ডেইলি সেল (Daily Sale BDT)</label>
+          <label class="block text-xs font-medium text-slate-600 mb-1">সময় (Auto Time)</label>
+          <input type="text" id="shop-time" required class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-emerald-700 mb-1">ডেইলি সেল (Daily Sale)</label>
           <input type="number" id="shop-sale" placeholder="0" min="0" step="any" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-rose-700 mb-1">মাল ক্রয় (Goods Buy BDT)</label>
+          <label class="block text-xs font-medium text-rose-700 mb-1">মাল ক্রয় (Goods Buy)</label>
           <input type="number" id="shop-purchase" placeholder="0" min="0" step="any" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500" />
         </div>
         <div>
@@ -301,7 +332,7 @@
           <label class="block text-xs font-medium text-slate-600 mb-1">বিবরণ / নোট (Note)</label>
           <input type="text" id="shop-note" placeholder="e.g. Daily Hisab" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-        <div class="sm:col-span-2 lg:col-span-5">
+        <div class="sm:col-span-2 lg:col-span-6">
           <button type="submit" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold text-sm py-2.5 rounded-lg transition">
             Save Daily Shop Record
           </button>
@@ -317,7 +348,7 @@
           <p class="text-xs text-slate-500">প্রতিদিনের সেল থেকে মাল ক্রয় ও খরচ বাদ দিয়ে নিট ক্যাশ হিসাব</p>
         </div>
         <span id="shop-badge-net" class="bg-teal-50 text-teal-800 text-xs font-bold px-3 py-1 rounded-full border border-teal-200">
-          Net Cash: 0 BDT
+          Cash in Hand: 0 BDT
         </span>
       </div>
       <div class="overflow-x-auto">
@@ -325,7 +356,7 @@
           <thead class="bg-teal-900 text-white text-xs uppercase">
             <tr>
               <th class="px-3 py-3 text-center">SL</th>
-              <th class="px-3 py-3 text-center">Date</th>
+              <th class="px-3 py-3 text-center">Date &amp; Time</th>
               <th class="px-3 py-3 text-left">Note</th>
               <th class="px-3 py-3 text-right">Daily Sale (+)</th>
               <th class="px-3 py-3 text-right">Goods Buy (-)</th>
@@ -393,30 +424,61 @@
   </footer>
 
   <script>
+    // ==================== AUTO DATE & TIME HELPERS ====================
+    function getAutoDate() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, "0");
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const yy = String(now.getFullYear()).slice(-2);
+      return `${dd}-${mm}-${yy}`;
+    }
+
+    function getAutoTime() {
+      const now = new Date();
+      return now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      });
+    }
+
+    function syncCurrentDateTime(prefix) {
+      const dateEl = document.getElementById(`${prefix}-date`);
+      const timeEl = document.getElementById(`${prefix}-time`);
+      if (dateEl) dateEl.value = getAutoDate();
+      if (timeEl) timeEl.value = getAutoTime();
+    }
+
+    function syncAllFormsDateTime() {
+      syncCurrentDateTime("tx");
+      syncCurrentDateTime("dep");
+      syncCurrentDateTime("shop");
+    }
+
     // ==================== INITIAL DATA ====================
     const INITIAL_TRANSACTIONS = [
-      { date: "03-11-26", number: "01813351727", amount: 10200 },
-      { date: "04-11-26", number: "01314877930", amount: 32640 },
-      { date: "04-11-26", number: "01813351727", amount: 6120 },
-      { date: "05-11-26", number: "01605766872", amount: 5100 },
-      { date: "05-11-26", number: "01752578297", amount: 16320 },
-      { date: "05-11-26", number: "01828584813", amount: 1020 },
-      { date: "06-11-26", number: "01752871994", amount: 15300 },
-      { date: "10-11-26", number: "01401664990", amount: 51000 },
-      { date: "10-11-26", number: "01316982168", amount: 2040 },
-      { date: "10-11-26", number: "01605766872", amount: 4080 },
-      { date: "10-11-26", number: "01855874438", amount: 5100 },
-      { date: "11-11-26", number: "01752578297", amount: 3400 },
-      { date: "12-11-26", number: "01823381587", amount: 5500 },
-      { date: "12-11-26", number: "01878932499", amount: 5100 },
-      { date: "16-11-26", number: "01813351727", amount: 20400 },
-      { date: "17-11-26", number: "01825389507", amount: 6120 },
-      { date: "17-11-26", number: "01316982168", amount: 2040 },
-      { date: "18-11-26", number: "01815129617", amount: 12140 }
+      { date: "03-11-26", time: "", number: "01813351727", amount: 10200 },
+      { date: "04-11-26", time: "", number: "01314877930", amount: 32640 },
+      { date: "04-11-26", time: "", number: "01813351727", amount: 6120 },
+      { date: "05-11-26", time: "", number: "01605766872", amount: 5100 },
+      { date: "05-11-26", time: "", number: "01752578297", amount: 16320 },
+      { date: "05-11-26", time: "", number: "01828584813", amount: 1020 },
+      { date: "06-11-26", time: "", number: "01752871994", amount: 15300 },
+      { date: "10-11-26", time: "", number: "01401664990", amount: 51000 },
+      { date: "10-11-26", time: "", number: "01316982168", amount: 2040 },
+      { date: "10-11-26", time: "", number: "01605766872", amount: 4080 },
+      { date: "10-11-26", time: "", number: "01855874438", amount: 5100 },
+      { date: "11-11-26", time: "", number: "01752578297", amount: 3400 },
+      { date: "12-11-26", time: "", number: "01823381587", amount: 5500 },
+      { date: "12-11-26", time: "", number: "01878932499", amount: 5100 },
+      { date: "16-11-26", time: "", number: "01813351727", amount: 20400 },
+      { date: "17-11-26", time: "", number: "01825389507", amount: 6120 },
+      { date: "17-11-26", time: "", number: "01316982168", amount: 2040 },
+      { date: "18-11-26", time: "", number: "01815129617", amount: 12140 }
     ];
 
     const INITIAL_DEPOSITS = [
-      { date: "11-11-26", note: "Initial Deposit", amount: 145000 }
+      { date: "11-11-26", time: "", note: "Initial Deposit", amount: 145000 }
     ];
 
     // Storage Keys
@@ -477,6 +539,7 @@
         btnShop.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-teal-600 text-white shadow transition";
         btnBkash.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-blue-900 text-blue-200 hover:bg-blue-800 transition";
       }
+      syncAllFormsDateTime();
     }
 
     // ==================== RENDER BKASH ====================
@@ -492,11 +555,18 @@
         totalTx += amt;
         totalProfit += profit;
 
+        const timeBadge = item.time
+          ? `<span class="block text-[11px] font-medium text-blue-700 mt-0.5">${item.time}</span>`
+          : `<span class="block text-[10px] text-slate-400">Previous Entry</span>`;
+
         const tr = document.createElement("tr");
         tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
         tr.innerHTML = `
           <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
-          <td class="px-3 py-2.5 text-center whitespace-nowrap">${item.date}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap">
+            <span class="font-medium text-slate-800">${item.date}</span>
+            ${timeBadge}
+          </td>
           <td class="px-3 py-2.5 text-center font-mono">${item.number}</td>
           <td class="px-3 py-2.5 text-right font-bold text-slate-900">${formatNum(amt)}/-</td>
           <td class="px-3 py-2.5 text-right font-semibold text-pink-700">${formatDecimal(profit)}</td>
@@ -513,11 +583,18 @@
 
       deposits.forEach((item, index) => {
         totalDep += Number(item.amount);
+        const timeBadge = item.time
+          ? `<span class="block text-[11px] font-medium text-emerald-700 mt-0.5">${item.time}</span>`
+          : ``;
+
         const tr = document.createElement("tr");
         tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
         tr.innerHTML = `
           <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
-          <td class="px-3 py-2.5 text-center whitespace-nowrap">${item.date}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap">
+            <span class="font-medium text-slate-800">${item.date}</span>
+            ${timeBadge}
+          </td>
           <td class="px-3 py-2.5 text-center">${item.note}</td>
           <td class="px-3 py-2.5 text-right font-bold text-emerald-700">${formatNum(item.amount)}/-</td>
           <td class="px-3 py-2.5 text-center no-print">
@@ -584,11 +661,18 @@
           totalPurchase += purchase;
           totalExpense += expense;
 
+          const timeBadge = rec.time
+            ? `<span class="block text-[11px] font-medium text-teal-700 mt-0.5">${rec.time}</span>`
+            : ``;
+
           const tr = document.createElement("tr");
           tr.className = index % 2 === 1 ? "bg-slate-50" : "bg-white";
           tr.innerHTML = `
             <td class="px-3 py-2.5 text-center font-medium text-slate-600">${String(index + 1).padStart(2, "0")}</td>
-            <td class="px-3 py-2.5 text-center whitespace-nowrap">${rec.date}</td>
+            <td class="px-3 py-2.5 text-center whitespace-nowrap">
+              <span class="font-medium text-slate-800">${rec.date}</span>
+              ${timeBadge}
+            </td>
             <td class="px-3 py-2.5 text-left text-slate-700">${rec.note || "-"}</td>
             <td class="px-3 py-2.5 text-right font-bold text-emerald-700">${formatNum(sale)}/-</td>
             <td class="px-3 py-2.5 text-right font-semibold text-rose-700">${formatNum(purchase)}/-</td>
@@ -645,53 +729,58 @@
 
     document.getElementById("tx-form").addEventListener("submit", function(e) {
       e.preventDefault();
-      const date = document.getElementById("tx-date").value.trim();
+      const date = document.getElementById("tx-date").value.trim() || getAutoDate();
+      const time = document.getElementById("tx-time").value.trim() || getAutoTime();
       const number = document.getElementById("tx-number").value.trim();
       const amount = parseFloat(document.getElementById("tx-amount").value);
-      if (!date || !number || isNaN(amount) || amount <= 0) return;
+      if (!number || isNaN(amount) || amount <= 0) return;
 
-      transactions.push({ date, number, amount });
+      transactions.push({ date, time, number, amount });
       saveData();
       renderBkash();
-      this.reset();
+      document.getElementById("tx-number").value = "";
+      document.getElementById("tx-amount").value = "";
       document.getElementById("live-profit-preview").textContent = `Estimated Profit: 0.00 BDT`;
+      syncCurrentDateTime("tx");
     });
 
     document.getElementById("dep-form").addEventListener("submit", function(e) {
       e.preventDefault();
-      const date = document.getElementById("dep-date").value.trim();
+      const date = document.getElementById("dep-date").value.trim() || getAutoDate();
+      const time = document.getElementById("dep-time").value.trim() || getAutoTime();
       const note = document.getElementById("dep-note").value.trim() || "Deposit";
       const amount = parseFloat(document.getElementById("dep-amount").value);
-      if (!date || isNaN(amount) || amount <= 0) return;
+      if (isNaN(amount) || amount <= 0) return;
 
-      deposits.push({ date, note, amount });
+      deposits.push({ date, time, note, amount });
       saveData();
       renderBkash();
-      document.getElementById("dep-date").value = "";
       document.getElementById("dep-amount").value = "";
+      syncCurrentDateTime("dep");
     });
 
     document.getElementById("shop-form").addEventListener("submit", function(e) {
       e.preventDefault();
-      const date = document.getElementById("shop-date").value.trim();
+      const date = document.getElementById("shop-date").value.trim() || getAutoDate();
+      const time = document.getElementById("shop-time").value.trim() || getAutoTime();
       const sale = parseFloat(document.getElementById("shop-sale").value) || 0;
       const purchase = parseFloat(document.getElementById("shop-purchase").value) || 0;
       const expense = parseFloat(document.getElementById("shop-expense").value) || 0;
       const note = document.getElementById("shop-note").value.trim();
 
-      if (!date) return;
       if (sale === 0 && purchase === 0 && expense === 0) {
         alert("অন্তত ডেইলি সেল, মাল ক্রয় বা খরচের একটি ঘর পূরণ করুন।");
         return;
       }
 
-      shopRecords.push({ date, sale, purchase, expense, note });
+      shopRecords.push({ date, time, sale, purchase, expense, note });
       saveData();
       renderShop();
       document.getElementById("shop-sale").value = "0";
       document.getElementById("shop-purchase").value = "0";
       document.getElementById("shop-expense").value = "0";
       document.getElementById("shop-note").value = "";
+      syncCurrentDateTime("shop");
     });
 
     function changeRate() {
@@ -761,6 +850,8 @@
       }
     }
 
+    // Initialize
+    syncAllFormsDateTime();
     renderAll();
   </script>
 </body>
